@@ -30,4 +30,12 @@ DEFAULT_CONFIG = {
         # Example: "get_stock_data": "alpha_vantage",  # Override category default
         # Example: "get_news": "openai",               # Override category default
     },
+    "sentiment": {
+        "provider": "finbert",       # options: "finbert", "openai", "none"
+        "model_id": "yiyanghkust/finbert-tone",  # or "ProsusAI/finbert"
+        "device": "cpu",             # "cuda" / "mps" / "cpu"
+        "batch_size": 16,
+        "use_tool_calls": True,      # let LLM call tool per-article
+        "precompute": True,          # also compute deterministically in dataflow
+    }
 }

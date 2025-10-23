@@ -1,7 +1,7 @@
 from langchain_core.prompts import ChatPromptTemplate, MessagesPlaceholder
 import time
 import json
-from tradingagents.agents.utils.agent_utils import get_news
+from tradingagents.agents.utils.agent_utils import get_news, get_finbert_sentiment
 from tradingagents.dataflows.config import get_config
 
 
@@ -12,13 +12,25 @@ def create_social_media_analyst(llm):
         company_name = state["company_of_interest"]
 
         tools = [
-            get_news,
+            get_news, get_finbert_sentiment
         ]
 
         system_message = (
-            "You are a social media and company specific news researcher/analyst tasked with analyzing social media posts, recent company news, and public sentiment for a specific company over the past week. You will be given a company's name your objective is to write a comprehensive long report detailing your analysis, insights, and implications for traders and investors on this company's current state after looking at social media and what people are saying about that company, analyzing sentiment data of what people feel each day about the company, and looking at recent company news. Use the get_news(query, start_date, end_date) tool to search for company-specific news and social media discussions. Try to look at all sources possible from social media to sentiment to news. Do not simply state the trends are mixed, provide detailed and finegrained analysis and insights that may help traders make decisions."
-            + """ Make sure to append a Markdown table at the end of the report to organize key points in the report, organized and easy to read.""",
+            "You are a social media and company-specific sentiment analyst. "
+            "Your job is to analyze social media posts, recent company news, and public sentiment "
+            "for the given company over the past week. "
+            "You must **call the tool get_news(query, start_date, end_date)** to fetch company-related news, "
+            "and then **call the tool get_finbert_sentiment(texts)** on the fetched headlines and summaries "
+            "to obtain quantitative sentiment scores (positive, neutral, negative probabilities). "
+            "Use these FinBERT scores to compute overall sentiment statistics "
+            "(average pos/neg/neu values, sentiment skew, and the dominant label). "
+            "In your final output, include a JSON field named 'scores' with these values: "
+            "{'pos_mean': float, 'neu_mean': float, 'neg_mean': float, 'n': int}, "
+            "and list the top 3 headlines with their individual FinBERT scores in a Markdown table. "
+            "Do not just say 'mixed sentiment' — explain what FinBERT indicates quantitatively "
+            "and what it implies for traders or investors."
         )
+
 
         prompt = ChatPromptTemplate.from_messages(
             [
