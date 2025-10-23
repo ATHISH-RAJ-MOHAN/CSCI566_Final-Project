@@ -82,13 +82,13 @@ def get_finbert_sentiment(texts: List[str]) -> List[Dict[str, Any]]:
     Output: list of dicts with keys: pos, neu, neg, label
     """
 
-    # 🔧 1. Create absolute-safe directory
+    # 1. Create absolute-safe directory
     project_dir = Path(DEFAULT_CONFIG.get("project_dir", "."))
     log_dir = project_dir / "dataflows" / "data_cache"
     log_dir.mkdir(parents=True, exist_ok=True)
     log_file = log_dir / "finbert_tool_calls.log"
 
-    # 🔧 2. Write call log (protected)
+    # 2. Write call log (protected)
     try:
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(
@@ -98,7 +98,7 @@ def get_finbert_sentiment(texts: List[str]) -> List[Dict[str, Any]]:
     except Exception as e:
         print(f"[FinBERT] Could not write to log file: {e}")
 
-    # 🧠 3. Run FinBERT scoring
+    # 3. Run FinBERT scoring
     cfg = DEFAULT_CONFIG.get("sentiment", {})
     out = score_finbert(
         texts=texts,
@@ -107,7 +107,7 @@ def get_finbert_sentiment(texts: List[str]) -> List[Dict[str, Any]]:
         batch_size=cfg.get("batch_size", 16),
     )
 
-    # 🔧 4. Log outputs (safe)
+    # 4. Log outputs (safe)
     try:
         with open(log_file, "a", encoding="utf-8") as f:
             f.write(json.dumps(
