@@ -28,8 +28,8 @@ ta = TradingAgentsGraph(debug=True, config=config)
 print(decision)'''
 
 df = pd.read_csv('Trading_Stocks.csv')
-#df = df[:1500] - Unnati
-# df = df[1500:] - Athish
+#df = df[:632] - Unnati
+# df = df[632:] - Athish
 df['Date'] = pd.to_datetime(df['Date'])
 # Run over dataset
 results = []
