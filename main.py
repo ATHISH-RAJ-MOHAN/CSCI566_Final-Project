@@ -2,6 +2,8 @@ from tradingagents.graph.trading_graph import TradingAgentsGraph
 from tradingagents.default_config import DEFAULT_CONFIG
 import pandas as pd
 from dotenv import load_dotenv
+import os
+import time
 
 # Load environment variables from .env file
 load_dotenv()
@@ -27,44 +29,51 @@ ta = TradingAgentsGraph(debug=True, config=config)
 '''_, decision = ta.propagate("NVDA", "2024-05-10")
 print(decision)'''
 
+import pandas as pd
+import os
+import time  # <-- Add this import
+
 df = pd.read_csv('Trading_Stocks.csv')
-df = df[:100] 
-
-#df = df[:50] - Unnati
-#df = df[50:]- Athish
+df = df[:100]
+#df = df[0:50] - Unnati
+df = df[75:]
 df['Date'] = pd.to_datetime(df['Date'])
-# Run over dataset
-results = []
 
-for _, row in df.iterrows():
-    ticker = row['Stock']    
+output_path = "eval_results/tradingagents_batch_output.csv"
+
+if not os.path.exists(output_path):
+    pd.DataFrame(columns=["Ticker", "Date", "Target_Action", "Trader_Decision", "Error"]).to_csv(output_path, index=False)
+
+api_counter = 0  # Track number of API calls
+
+for i, row in df.iterrows():
+    ticker = row['Stock']
     date = row['Date'].strftime('%Y-%m-%d')
     target_action = row['Decision']
 
     try:
         state, decision = ta.propagate(ticker, date)
-        print('ATHISH DECISION DEBUGGGG = ', decision)
-        results.append({
+        print(f"[{i+1}/{len(df)}]  {ticker} on {date} → {decision}")
+        result = {
             "Ticker": ticker,
             "Date": date,
             "Target_Action": target_action,
-            "Trader_Decision": decision,
-            #"Reasoning": decision.get("reasoning", "N/A"),
-            #"Confidence": decision.get("confidence", "N/A")
-        })
+            "Trader_Decision": decision
+        }
+        api_counter += 1  # Increment only on successful API call
     except Exception as e:
-        results.append({
+        print(f"[{i+1}/{len(df)}] {ticker} on {date} → ERROR: {e}")
+        result = {
             "Ticker": ticker,
             "Date": date,
             "Target_Action": target_action,
             "Trader_Decision": "ERROR",
-            "Error": str(e),
-            #"Confidence": "N/A"
-        })
+            "Error": str(e)
+        }
 
-# Save results
-pd.DataFrame(results).to_csv("eval_results/tradingagents_batch_output.csv", index=False)
+    pd.DataFrame([result]).to_csv(output_path, mode='a', header=False, index=False)
 
-
-# Memorize mistakes and reflect
-# ta.reflect_and_remember(1000) # parameter is the position returns
+    #  Sleep after every 5 calls
+    if api_counter % 5 == 0 and api_counter != 0:
+        print(" Sleeping for 60 seconds to respect API pacing...")
+        time.sleep(60)
