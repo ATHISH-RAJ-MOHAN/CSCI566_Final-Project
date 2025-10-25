@@ -36,13 +36,13 @@ import time  # <-- Add this import
 df = pd.read_csv('Trading_Stocks.csv')
 df = df[:100]
 #df = df[0:50] - Unnati
-df = df[75:]
+#df = df[76:] - Athish
 df['Date'] = pd.to_datetime(df['Date'])
 
 output_path = "eval_results/tradingagents_batch_output.csv"
 
 if not os.path.exists(output_path):
-    pd.DataFrame(columns=["Ticker", "Date", "Target_Action", "Trader_Decision", "Error"]).to_csv(output_path, index=False)
+    pd.DataFrame(columns=["Ticker", "Date", "Target_Action", "Trader_Decision"]).to_csv(output_path, index=False)
 
 api_counter = 0  # Track number of API calls
 
@@ -67,8 +67,8 @@ for i, row in df.iterrows():
             "Ticker": ticker,
             "Date": date,
             "Target_Action": target_action,
-            "Trader_Decision": "ERROR",
-            "Error": str(e)
+            "Trader_Decision": "ERROR"
+            #"Error": str(e)
         }
 
     pd.DataFrame([result]).to_csv(output_path, mode='a', header=False, index=False)
