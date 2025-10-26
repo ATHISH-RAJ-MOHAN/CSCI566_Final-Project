@@ -81,7 +81,7 @@ def get_finbert_sentiment(texts: List[str]) -> List[Dict[str, Any]]:
     Input: list of strings (headlines/sentences).
     Output: list of dicts with keys: pos, neu, neg, label
     """
-
+    print("Inside FinBERT")
     # 1. Create absolute-safe directory
     project_dir = Path(DEFAULT_CONFIG.get("project_dir", "."))
     log_dir = project_dir / "dataflows" / "data_cache"
@@ -116,3 +116,5 @@ def get_finbert_sentiment(texts: List[str]) -> List[Dict[str, Any]]:
             ) + "\n")
     except Exception as e:
         print(f"[FinBERT] Could not write return log: {e}")
+    
+    return out

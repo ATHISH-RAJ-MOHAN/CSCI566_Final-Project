@@ -29,17 +29,11 @@ ta = TradingAgentsGraph(debug=True, config=config)
 '''_, decision = ta.propagate("NVDA", "2024-05-10")
 print(decision)'''
 
-import pandas as pd
-import os
-import time  # <-- Add this import
-
 df = pd.read_csv('Trading_Stocks.csv')
-df = df[:100]
-#df = df[0:50] - Unnati
-#df = df[76:] - Athish
+df = df[50:101] # Unnati
 df['Date'] = pd.to_datetime(df['Date'])
 
-output_path = "eval_results/tradingagents_batch_output.csv"
+output_path = "eval_results/tradingagents_batch_output_with_FinBERT.csv"
 
 if not os.path.exists(output_path):
     pd.DataFrame(columns=["Ticker", "Date", "Target_Action", "Trader_Decision"]).to_csv(output_path, index=False)

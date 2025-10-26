@@ -136,7 +136,7 @@ class TradingAgentsGraph:
                 [
                     # News tools for social media analysis
                     get_news,
-                    #get_finbert_sentiment
+                    get_finbert_sentiment
                 ]
             ),
             "news": ToolNode(
@@ -146,7 +146,7 @@ class TradingAgentsGraph:
                     get_global_news,
                     get_insider_sentiment,
                     get_insider_transactions,
-                    #get_finbert_sentiment
+                    get_finbert_sentiment
                 ]
             ),
             "fundamentals": ToolNode(
